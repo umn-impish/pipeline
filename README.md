@@ -32,8 +32,8 @@ There are some handy tools included in the installation:
 
 # Rough outline of data levels
 ---
-| Level 0              | Level 1                     | Level 2                              |   |   |
-|----------------------|-----------------------------|--------------------------------------|---|---|
-| Raw data from IMPISH | Intermittent data product   | Science-ready data                   |   |   |
-| Many small files     | One file per day            | Applied detector calibration         |   |   |
-|                      | Spectra grouped with T data | Adjusted for IMPISH lat/lon/altitude |   |   |
+| Level 0              | Level 1                     | Level 2                              |
+|----------------------|-----------------------------|--------------------------------------|
+| Raw data from IMPISH | Intermittent data product   | Science-ready data                   |
+| Many small files     | One file per day            | Applied detector calibration         |
+|                      | Spectra grouped with T data | Adjusted for IMPISH lat/lon/altitude |
