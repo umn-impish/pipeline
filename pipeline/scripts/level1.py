@@ -28,7 +28,7 @@ def main():
         epilog="Example of use: python level1.py 2026 176 ./science ./temperature",
     )
     _ = parser.add_argument("year", type=int)
-    _ = parser.add_argument("doy", help="day of year", type=int)
+    _ = parser.add_argument("doy", help="UTC day of year", type=int)
     _ = parser.add_argument(
         "science_dir", help="directory with the science files", type=str
     )
