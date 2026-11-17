@@ -4,8 +4,8 @@ Simple functions for obtaining science and temperature files.
 
 from pathlib import Path
 
-TEMPERATURE_PREFIX: str = "impish_temperatures_{year:04}-{doy:03}"
-SCIENCE_PREFIX: str = "science_{year:04}-{doy:03}"
+TEMPERATURE_PREFIX: str = "impish_temperatures_{year:04}-{doy:03}-{hour:02}"
+SCIENCE_PREFIX: str = "science_{year:04}-{doy:03}-{hour:02}"
 
 
 def _get_files(directory: Path, glob: str) -> list[Path]:
@@ -22,17 +22,17 @@ def _get_files(directory: Path, glob: str) -> list[Path]:
     return files
 
 
-def get_science_files(year: int, doy: int, directory: Path) -> list[Path]:
+def get_science_files(year: int, doy: int, hour: int, directory: Path) -> list[Path]:
     """Get all science files from the specified day."""
     return _get_files(
         directory=directory,
-        glob=f"{SCIENCE_PREFIX.format(year=year, doy=doy)}*.bin.bz2",
+        glob=f"{SCIENCE_PREFIX.format(year=year, doy=doy, hour=hour)}*.bin.bz2",
     )
 
 
-def get_temperature_files(year: int, doy: int, directory: Path) -> list[Path]:
+def get_temperature_files(year: int, doy: int, hour: int, directory: Path) -> list[Path]:
     """Get all temperature files from the specified day."""
     return _get_files(
         directory=directory,
-        glob=f"{TEMPERATURE_PREFIX.format(year=year, doy=doy)}*.bin.xz",
+        glob=f"{TEMPERATURE_PREFIX.format(year=year, doy=doy, hour=hour)}*.bin.xz",
     )
