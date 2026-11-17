@@ -50,13 +50,13 @@ def load_science_data(files: list[Path]) -> ScienceSeries:
             i, length, prefix="Loading science data:", suffix="Complete"
         )
     length = len(files)
-    pool = mp.Pool(processes=mp.cpu_count())
     mids, deltas, counts = [], [], []
-    for (mid, delta, count) in pool.imap(_load_science_data_helper, files, chunksize=20):
-        mids.append(mid[0])
-        deltas.append(delta[0])
-        counts.append(count[0])
-        science_bar(len(mids), length)
+    with mp.Pool(processes=min(mp.cpu_count(), length)) as pool:
+        for mid, delta, count in pool.imap(_load_science_data_helper, files, chunksize=1):
+            mids.append(mid[0])
+            deltas.append(delta[0])
+            counts.append(count[0])
+            science_bar(len(mids), length)
 
     # Combine without storing a duplicate in RAM
     total_len = sum(arr.shape[0] for arr in counts)
@@ -70,7 +70,7 @@ def load_science_data(files: list[Path]) -> ScienceSeries:
     return {
         "time_mids": Time(mids),
         "time_deltas": np.concatenate(deltas),
-        "counts": out * u.ct,
+        "counts": out,
     }
 
 

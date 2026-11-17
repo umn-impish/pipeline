@@ -79,6 +79,7 @@ def main():
         outfile: str = LEVEL1_FILE_FORMAT.format(year=year, doy=doy, hour=hour_range[0])
         write_asdf(science_temps, science_data, outfile, arg.compression)
         print(f"wrote level 1 file: {outfile}\n")
+        del science_data, science_temps, temperature_files, science_files
 
 
 if __name__ == "__main__":
