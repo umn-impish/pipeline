@@ -49,21 +49,28 @@ def load_science_data(files: list[Path]) -> ScienceSeries:
         progress_bar.pprint(
             i, length, prefix="Loading science data:", suffix="Complete"
         )
-
-    files = files
     length = len(files)
-    pool = mp.Pool(processes=32)
+    pool = mp.Pool(processes=mp.cpu_count())
     mids, deltas, counts = [], [], []
-    for mid, delta, count in pool.imap(_load_science_data_helper, files, chunksize=20):
+    for (mid, delta, count) in pool.imap(_load_science_data_helper, files, chunksize=20):
         mids.append(mid[0])
         deltas.append(delta[0])
         counts.append(count[0])
         science_bar(len(mids), length)
 
+    # Combine without storing a duplicate in RAM
+    total_len = sum(arr.shape[0] for arr in counts)
+    out = np.empty((total_len, *counts[0].shape[1:]), dtype=counts[0].dtype)
+    idx = total_len
+    while counts:
+        arr = counts.pop()
+        idx -= arr.shape[0]
+        out[idx : idx + arr.shape[0]] = arr
+
     return {
         "time_mids": Time(mids),
         "time_deltas": np.concatenate(deltas),
-        "counts": np.concatenate(counts, dtype=np.uint16),
+        "counts": out * u.ct,
     }
 
 
@@ -79,26 +86,3 @@ def _load_science_data_helper(
         counts.append(current["counts"])
 
     return (mids, deltas, counts)
-
-
-def load_science_data_serial(files: list[Path]) -> ScienceSeries:
-    """Load the data serially. Parallelization doesn't help much with saving time
-    since the bulk of the level1 processing is saving to the asdf file (compression)."""
-
-    def science_bar(i: int, length: int):
-        progress_bar.pprint(i, length, prefix="Science progress:", suffix="Complete")
-
-    length: int = len(files)
-    mids, deltas, counts = [], [], []
-    for i, file in enumerate(files):
-        current = load_file(file)
-        mids.append(current["time_mids"])
-        deltas.append(current["time_deltas"])
-        counts.append(current["counts"])
-        science_bar(i + 1, length)
-
-    return {
-        "time_mids": Time(mids),
-        "time_deltas": np.concatenate(deltas),
-        "counts": np.concatenate(counts, dtype=np.uint16),
-    }
